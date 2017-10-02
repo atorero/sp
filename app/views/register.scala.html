@@ -1,0 +1,23 @@
+@import services.UserData
+@import helper._
+
+@(userForm: Form[UserData])(implicit messages: Messages)
+
+@main("Become a Member") {
+
+<h2>
+    Please register!
+</h2>
+
+<script src="@routes.Assets.versioned("javascripts/jquery-min.3.2.1.js")">
+</script>
+
+@form(action = routes.RegisterController.userPost()) {
+    @inputText(userForm("name"))
+    @inputText(userForm("country"))
+    @inputText(userForm("login"))
+    @inputPassword(userForm("password"))
+    <button type="submit">Sign Up</button>
+}
+
+}
