@@ -19,18 +19,19 @@ class RegisterController @Inject()(
 
   val userForm = Form(
     mapping(
-      "name" -> text,
+      "name" -> nonEmptyText,
       "country" -> nonEmptyText,
+      "email" -> nonEmptyText,
       "login" -> nonEmptyText,
       "password" -> nonEmptyText
     )(UserData.apply)(UserData.unapply)
   )
 
-  def form = Action { implicit request =>
+  def form = Action { implicit request : Request[AnyContent] =>
     Ok(views.html.register(userForm))
   }
 
-  def userPost = Action { implicit request =>
+  def userPost = Action { implicit request : Request[AnyContent] =>
     userForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest("Failed")

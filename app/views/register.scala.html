@@ -9,15 +9,28 @@
     Please register!
 </h2>
 
-<script src="@routes.Assets.versioned("javascripts/jquery-min.3.2.1.js")">
-</script>
+<script src="@routes.Assets.versioned("javascripts/jquery.js")"></script>
+<script src="@routes.Assets.versioned("javascripts/jquery.validate.js")"></script>
+<script src="@routes.Assets.versioned("javascripts/registerFormValidation.js")"></script>
 
-@form(action = routes.RegisterController.userPost()) {
+
+
+@form( action = routes.RegisterController.userPost(), 'id -> "registerForm") {
     @inputText(userForm("name"))
     @inputText(userForm("country"))
+    @inputText(userForm("email"))
     @inputText(userForm("login"))
     @inputPassword(userForm("password"))
+    @inputPassword(userForm("confirmPassword"))
     <button type="submit">Sign Up</button>
 }
+
+
+@*
+<form id="registerForm" method="post" action="">
+    <input type="text" id="name" name="name"/>
+    <input type="submit" value="Sign Up!"/>
+</form>
+*@
 
 }
