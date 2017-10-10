@@ -17,3 +17,5 @@ GET    /userpost                   controllers.RegisterController.userPost
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 #GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+GET     /labs                       controllers.LabsController.list

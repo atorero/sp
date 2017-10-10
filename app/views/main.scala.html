@@ -17,9 +17,28 @@
   </div>
 </section>
 
-        @* And here's where we render the `Html` object containing
-         * the page content. *@
+<div id="content" class="wrapper doc">
+    <article>
         @content
+    </article>
+
+    <aside>
+        <h3>For Business</h3>
+        <ul>
+            <li><a href="@routes.RegisterController.form">Sign up</a></li>
+            <li><a href="@routes.LabsController.list">Browse Researchers</a></li>
+        </ul>
+        <h3>For Science</h3>
+        <ul>
+            <li>Advantages</li>
+            <li>Sign up</li>
+        </ul>
+        <h3>About Us</h3>
+        <ul>
+            <li>About page</li>
+        </ul>
+    </aside>
+</div>
     </body>
     <footer>
         <div>

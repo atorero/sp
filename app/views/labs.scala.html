@@ -1,0 +1,22 @@
+@import services.Lab
+
+@(labList: Seq[Lab])
+
+@main("Labs") {
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>University</th>
+        <th>Country</th>
+    </tr>
+    @for(lab <- labList) {
+    <tr>
+        <td>@lab.name</td>
+        <td>@lab.university</td>
+        <td>@lab.country</td>
+    </tr>
+    }
+</table>
+
+}
