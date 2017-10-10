@@ -6,5 +6,6 @@ GET     /                           controllers.HomeController.index
 GET     /register                   controllers.RegisterController.form
 GET     /userpost                   controllers.RegisterController.userPost
 GET     /labs                       controllers.LabsController.list
+GET     /about                      controllers.AboutController.about
 
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
