@@ -4,12 +4,15 @@
 
 @main("Labs") {
 
+<h1>Researchers</h1>
+
 <table>
-    <tr>
+    <thead><tr>
         <th>Name</th>
         <th>University</th>
         <th>Country</th>
-    </tr>
+    </tr></thead>
+    <tbody>
     @for(lab <- labList) {
     <tr>
         <td>@lab.name</td>
@@ -17,6 +20,7 @@
         <td>@lab.country</td>
     </tr>
     }
+    </tbody>
 </table>
 
 }
