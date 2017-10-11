@@ -3,7 +3,6 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        @* Here's where we render the page title `String`. *@
         <title>Science Provider - @title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
@@ -22,24 +21,10 @@
         @content
     </article>
 
-    <aside>
-        <h3>For Business</h3>
-        <ul>
-            <li><a href="@routes.RegisterController.form">Sign up</a></li>
-            <li><a href="@routes.LabsController.list">Browse Researchers</a></li>
-        </ul>
-        <h3>For Science</h3>
-        <ul>
-            <li>Advantages</li>
-            <li>Sign up</li>
-        </ul>
-        <h3><a href="@routes.AboutController.about">About Us</a></h3>
-    </aside>
+        @sidebar()
 </div>
     </body>
     <footer>
-        <div>
-            <p>Switzerland. 2017</p>
-        </div>
+        @footer()
     </footer>
 </html>
