@@ -9,4 +9,9 @@ GET     /labs                       controllers.LabsController.list
 GET     /about                      controllers.AboutController.about
 GET     /science                    controllers.ScienceController.index
 
+
+GET     /labs/create                controllers.LabsController.createDB
+GET     /labs/drop                  controllers.LabsController.dropTable
+GET     /labs/add                   controllers.LabsController.add(name: String, uni: String, country: String)
+
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
