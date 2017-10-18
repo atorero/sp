@@ -15,7 +15,7 @@
     <tbody>
     @for(lab <- labList) {
     <tr>
-        <td>@lab.name</td>
+        <td><a href="@routes.LabsController.get(lab.id)">@lab.name</a></td>
         <td>@lab.university</td>
         <td>@lab.country</td>
     </tr>

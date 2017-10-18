@@ -22,6 +22,11 @@ class LabsController @Inject()(cc: ControllerComponents) extends AbstractControl
     Ok(views.html.labs(all))
   }
 
+  def get(id: Int) = Action {
+    val lab = LabsRecord.get(id)
+    Ok(views.html.lab(lab))
+  }
+
   def createDB = Action {
     LabsRecord.create
     Ok("Created the LABS table!")

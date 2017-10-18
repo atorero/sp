@@ -52,8 +52,18 @@ object LabsRecord {
     val labs = TableQuery[LabsRecord]
     val retrieved = Await.result(db.run(labs.result), 1 second)
     retrieved.map {
-      case (_, name, uni, country) => Lab(name, uni, country)
+      case (id, name, uni, country) => Lab(id, name, uni, country)
     }
+  }
+
+  def get(id: Int): Lab = {
+    val labs = TableQuery[LabsRecord].filter { _.id === id }
+    Await
+      .result(db.run(labs.result), 1 second)
+      .map {
+        case (id, name, uni, country) => Lab(id, name, uni, country)
+      }
+      .head
   }
 
 }
