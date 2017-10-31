@@ -43,4 +43,9 @@ class LabsController @Inject()(cc: ControllerComponents) extends AbstractControl
     Ok(lab.toString)
   }
 
+  def addDummy = Action {
+    dummy.foreach { LabsRecord.add }
+    Ok(dummy.toString)
+  }
+
 }
