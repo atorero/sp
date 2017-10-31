@@ -3,49 +3,44 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import play.api.mvc.{AbstractController, ControllerComponents}
-import play.api.mvc._
 import services.{Lab, LabsRecord}
+
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Created by amikhaylov8 on 10.10.17.
   */
 @Singleton
-class LabsController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class LabsController @Inject()(implicit ec: ExecutionContext, cc: ControllerComponents) extends AbstractController(cc) {
 
   val dummy = List(
     Lab("LPMV", "EPFL", "Switzerland"),
     Lab("Bioinformatics", "MIPT", "Russia"))
 
-  def all: Seq[Lab] = LabsRecord.getAll
-
-  def list = Action {
-    Ok(views.html.labs(all))
+  def list = Action.async {
+    LabsRecord.getAll.map { labs => Ok(views.html.labs(labs)) }
   }
 
-  def get(id: Int) = Action {
-    val lab = LabsRecord.get(id)
-    Ok(views.html.lab(lab))
+  def get(id: Int) = Action.async {
+    LabsRecord.get(id).map { lab => Ok(views.html.lab(lab)) }
   }
 
-  def createDB = Action {
-    LabsRecord.create
-    Ok("Created the LABS table!")
+  def createDB = Action.async {
+    LabsRecord.create.map {_ => Ok("Created the LABS table!") }
   }
 
-  def dropTable = Action {
-    LabsRecord.drop
-    Ok("dropped the LABS table!")
+  def dropTable = Action.async {
+    LabsRecord.drop.map { _ => Ok("dropped the LABS table!") }
   }
 
-  def add(name: String, university: String, country: String) =  Action {
+  def add(name: String, university: String, country: String) =  Action.async {
     val lab = Lab(name, university, country)
-    LabsRecord.add(lab)
-    Ok(lab.toString)
+    LabsRecord.add(lab).map { id => Ok(s"Inserted a new lab with id=$id") }
   }
 
-  def addDummy = Action {
-    dummy.foreach { LabsRecord.add }
-    Ok(dummy.toString)
+  def addDummy = Action.async {
+    val insertChain = dummy.foldLeft ( Future(-1) ) { (prev, lab) => prev.flatMap(_ => LabsRecord.add(lab)) }
+    insertChain.map { _ => Ok(dummy.toString) }
   }
 
 }

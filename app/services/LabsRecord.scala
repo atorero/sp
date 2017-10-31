@@ -1,17 +1,16 @@
 package services
 
+import services.Lab.LabTuple
 import slick.jdbc.H2Profile.api._
 import slick.lifted.{TableQuery, Tag}
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
-import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by amikhaylov8 on 17.10.17.
   */
-class LabsRecord(tag: Tag) extends Table[(Int, String, String, String)](tag, "LABS") {
+class LabsRecord(tag: Tag) extends Table[LabTuple](tag, "LABS") {
   def id = column[Int]("ID", O.PrimaryKey, O.AutoInc)
   def name = column[String]("NAME")
   def university = column[String]("UNIVERSITY")
@@ -21,49 +20,36 @@ class LabsRecord(tag: Tag) extends Table[(Int, String, String, String)](tag, "LA
   def idx = index("NAME_UNIVERSITY", (name, university), unique = true)
 }
 
+
+
 object LabsRecord {
 
   val dbName = "h2file"
   val db = Database.forConfig(dbName)
 
-  def create = {
-    db.run(TableQuery[LabsRecord].schema.create).onComplete {
-      case Success(_) => println("Table created")
-      case Failure(ex) => println(ex)
-    }
-  }
+  def create = db.run(TableQuery[LabsRecord].schema.create)
 
-  def drop = {
-    db.run(TableQuery[LabsRecord].schema.drop).onComplete {
-      case Success(_) => println("Table dropped")
-      case Failure(ex) => println(ex)
-    }
-  }
+  def drop = db.run(TableQuery[LabsRecord].schema.drop)
 
-  def add(lab: Lab) = {
+  def add(lab: Lab): Future[Int] = {
     val labs = TableQuery[LabsRecord]
-    db.run(labs += ( 0, lab.name, lab.university, lab.country  )).onComplete {
-      case Success(_) => println("Lab inserted")
-      case Failure(ex) => println(ex)
-    }
+    db.run(labs += ( 0, lab.name, lab.university, lab.country  ))
   }
 
-  def getAll: Seq[Lab] = {
-    val labs = TableQuery[LabsRecord]
-    val retrieved = Await.result(db.run(labs.result), 1 second)
-    retrieved.map {
-      case (id, name, uni, country) => Lab(id, name, uni, country)
-    }
+  def getAll: Future[Seq[Lab]] = {
+    val labsQuery = TableQuery[LabsRecord]
+    db.run(labsQuery.result)
+      .map { _.map { Lab.apply } }
   }
 
-  def get(id: Int): Lab = {
-    val labs = TableQuery[LabsRecord].filter { _.id === id }
-    Await
-      .result(db.run(labs.result), 1 second)
+  def get(id: Int): Future[Lab] = {
+    val labs = TableQuery[LabsRecord].filter {
+      _.id === id
+    }
+    db.run(labs.result)
       .map {
-        case (id, name, uni, country) => Lab(id, name, uni, country)
+        case Seq(tuple: LabTuple) => Lab(tuple)
       }
-      .head
   }
 
 }
