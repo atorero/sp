@@ -1,13 +1,25 @@
-<aside>
-    <h3>For Business</h3>
-    <ul>
-        <li><a href="@routes.LabsController.list">Browse Researchers</a></li>
-        <li><a href="@routes.RegisterController.form">Sign up</a></li>
+<nav id="sidebar">
+    <div class="sidebar-header">
+        <h3>Explore</h3>
+    </div>
+
+    <ul class="list-unstyled components">
+        <!--<li class="active"><a href="#">Home</a></li>-->
+        <li><!-- Link with dropdown items -->
+            <a href="#businessSubmenu" data-toggle="collapse" aria-expanded="false">For Business</a>
+            <ul class="collapse list-unstyled" id="businessSubmenu">
+                <li><a href="@routes.LabsController.list">Browse Researchers</a></li>
+                <li><a href="@routes.RegisterController.form">Sign up</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#researchersSubmenu" data-toggle="collapse" aria-expanded="false">For Researchers</a>
+            <ul class="collapse list-unstyled" id="researchersSubmenu">
+                <li><a href="@routes.ScienceController.index">Advantages</a></li>
+                <li><a href="@routes.RegisterController.form">Sign up</a></li>
+            </ul>
+        </li>
+        <li><a href="@routes.AboutController.about">About Us</a></li>
     </ul>
-    <h3>For Scientists</h3>
-    <ul>
-        <li><a href="@routes.ScienceController.index">Advantages</a></li>
-        <li><a href="@routes.RegisterController.form">Sign up</a></li>
-    </ul>
-    <h3><a href="@routes.AboutController.about">About Us</a></h3>
-</aside>
+
+</nav>
