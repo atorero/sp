@@ -14,3 +14,4 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0
 libraryDependencies += "com.h2database" % "h2" % "1.4.195"
 libraryDependencies += "com.typesafe.play" %% "play-slick" % "3.0.0"
 libraryDependencies += "org.webjars" % "jquery" % "3.2.1"
+libraryDependencies += ws

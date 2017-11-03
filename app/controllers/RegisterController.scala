@@ -8,13 +8,18 @@ import play.api.i18n.MessagesApi
 import play.api.i18n.Messages.Implicits._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.libs.ws.WSClient
+import play.api.libs.json.JsBoolean
+import scala.concurrent.{ExecutionContext, Future}
 
 import services.UserData
 
 @Singleton
 class RegisterController @Inject()(
+    implicit ec: ExecutionContext,
     cc: ControllerComponents,
-    messagesApi: MessagesApi) extends AbstractController(cc) with I18nSupport {
+    messagesApi: MessagesApi,
+    ws: WSClient) extends AbstractController(cc) with I18nSupport {
 
 
   val userForm = Form(
@@ -31,14 +36,37 @@ class RegisterController @Inject()(
     Ok(views.html.register(userForm))
   }
 
-  def userPost = Action { implicit request : Request[AnyContent] =>
+  def userPost = Action.async { implicit request : Request[AnyContent] =>
     userForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest("Failed")
+        Future(BadRequest("Failed"))
       },
       contact => {
-        val name = contact.name
-        Ok("Hi " + name + "!")
+        val captchaResponse = request.getQueryString("g-recaptcha-response").get
+        val remoteAddress = request.remoteAddress
+        println(remoteAddress)
+        val secretKey = "6LeGoTYUAAAAAET29aHT_Y6wONkmu9ssZDDLyR7T"
+
+        val validationRequest = ws.url("https://www.google.com/recaptcha/api/siteverify")
+
+        val params = Map(
+          "secret" -> Seq(secretKey),
+          "response" -> Seq(captchaResponse),
+          "remoteid" -> Seq(remoteAddress)
+        )
+
+        val validationFuture = validationRequest.post(params)
+        validationFuture.map { validationResponse =>
+          val name = contact.name
+          val result = validationResponse.json
+          println(result)
+          if ((result \ "success").as [Boolean])
+            Ok("Hi " + name + "!\n")
+          else
+            Ok("Captcha not passed: " + (result \ "error-codes"))
+        }
+
+
       }
     )
 
