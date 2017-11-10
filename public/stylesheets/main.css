@@ -36,7 +36,11 @@ article h3{font-size:18px;margin-bottom:9px;}
 article h4{font-size:15px;margin-bottom:3px;}
 article h5{font-size:12px;font-weight:normal;margin-bottom:3px;}
 article .subheader{color:#777;font-weight:300;margin-bottom:24px;}
-article p{line-height:1.3em;margin:1em 0;}
+article p{
+    line-height:1.3em;
+    margin:1em 0;
+    text-align: justify;
+}
 article p img{margin:0;}
 article p.lead{font-size:18px;font-size:1.8rem;line-height:1.5;}
 article li>p:first-child{margin-top:0;}
