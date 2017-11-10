@@ -39,7 +39,10 @@ class RegisterController @Inject()(
         Future(BadRequest("Failed"))
       },
       contact => {
-        val captchaResponse = request.getQueryString("g-recaptcha-response").get
+        val formParams = request.body.asFormUrlEncoded.get
+        println(formParams)
+        println(contact)
+        val captchaResponse = formParams("g-recaptcha-response")
         val remoteAddress = request.remoteAddress
         println(remoteAddress)
         val secretKey = "6LeGoTYUAAAAAET29aHT_Y6wONkmu9ssZDDLyR7T"
@@ -48,7 +51,7 @@ class RegisterController @Inject()(
 
         val params = Map(
           "secret" -> Seq(secretKey),
-          "response" -> Seq(captchaResponse),
+          "response" -> captchaResponse,
           "remoteid" -> Seq(remoteAddress)
         )
 

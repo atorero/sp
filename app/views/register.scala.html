@@ -1,7 +1,7 @@
 @import services.UserData
 @import helper._
 
-@(userForm: Form[UserData])(implicit messages: Messages)
+@(userForm: Form[UserData])(implicit messages: Messages, request: RequestHeader)
 
 @main("Become a Member") {
 
@@ -14,8 +14,9 @@
 <script src="@routes.Assets.versioned("javascripts/registerFormValidation.js")"></script>
 <script src='https://www.google.com/recaptcha/api.js' async defer></script>
 
-@form( action = routes.RegisterController.userPost(), 'id -> "registerForm",
+@form( action = routes.RegisterController.userPost(), 'id -> "registerForm", 'method -> "POST",
     'onsubmit -> "return $(this).valid() && grecaptcha.getResponse() != ''") {
+    @CSRF.formField
     @inputText(userForm("name"))
     @inputText(userForm("country"))
     @inputText(userForm("email"))
