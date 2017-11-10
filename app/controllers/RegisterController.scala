@@ -1,18 +1,15 @@
 package controllers
 
-import javax.inject._
+import javax.inject.{Inject, Singleton}
 
-import play.api.mvc._
-import play.api.i18n._
-import play.api.i18n.MessagesApi
-import play.api.i18n.Messages.Implicits._
-import play.api.data._
-import play.api.data.Forms._
+import play.api.data.Form
+import play.api.data.Forms.{mapping, nonEmptyText}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.ws.WSClient
-import play.api.libs.json.JsBoolean
-import scala.concurrent.{ExecutionContext, Future}
-
+import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
 import services.UserData
+
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RegisterController @Inject()(

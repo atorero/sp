@@ -1,9 +1,8 @@
 package controllers
 
-import javax.inject._
+import javax.inject.{Singleton, Inject}
 
-import play.api.mvc._
-import services.LabsRecord
+import play.api.mvc.{AbstractController, ControllerComponents}
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
