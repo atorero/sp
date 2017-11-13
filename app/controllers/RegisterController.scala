@@ -3,7 +3,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import play.api.data.Form
-import play.api.data.Forms.{mapping, nonEmptyText}
+import play.api.data.Forms.{mapping, nonEmptyText, email}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.ws.WSClient
 import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
@@ -23,7 +23,7 @@ class RegisterController @Inject()(
     mapping(
       "name" -> nonEmptyText,
       "country" -> nonEmptyText,
-      "email" -> nonEmptyText,
+      "email" -> email,
       "login" -> nonEmptyText,
       "password" -> nonEmptyText
     )(UserData.apply)(UserData.unapply)
@@ -35,9 +35,7 @@ class RegisterController @Inject()(
 
   def userPost = Action.async { implicit request : Request[AnyContent] =>
     userForm.bindFromRequest.fold(
-      formWithErrors => {
-        Future(BadRequest("Failed"))
-      },
+      formWithErrors => Future(BadRequest("Failed")),
       contact => {
         val formParams = request.body.asFormUrlEncoded.get
         println(formParams)
