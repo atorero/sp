@@ -2,6 +2,12 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
+import com.mohiva.play.silhouette.api.util.Credentials
+import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import models.{User, UserService}
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -12,9 +18,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class LoginController @Inject()(
-    implicit ec: ExecutionContext,
-    cc: ControllerComponents,
-    messagesApi: MessagesApi) extends AbstractController(cc) with I18nSupport {
+                                 userService: UserService,
+                                 credentialsProvider: CredentialsProvider,
+                                 authInfoRepository: AuthInfoRepository,
+                                 cc: ControllerComponents,
+                                 messagesApi: MessagesApi)
+                               (
+                                 implicit ec: ExecutionContext
+                               ) extends AbstractController(cc) with I18nSupport {
 
   val loginForm = Form(
     mapping(
@@ -23,7 +34,7 @@ class LoginController @Inject()(
     )(LoginData.apply)(LoginData.unapply)
   )
 
-  def form = Action { implicit request : Request[AnyContent] =>
+  def form = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.loginform(loginForm))
   }
 
@@ -31,7 +42,11 @@ class LoginController @Inject()(
     loginForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("Failed")),
       contact => {
-        Future(Ok("Logged in!"))
+        val credentials = Credentials(contact.login, contact.password)
+        credentialsProvider.authenticate(credentials).map { loginInfo =>
+          println(loginInfo)
+          Ok("Logged in!")
+        }
       })
   }
 }
