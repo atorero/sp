@@ -5,9 +5,7 @@ version := "0.4-SNAPSHOT"
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 resolvers += Resolver.sonatypeRepo("snapshots")
-
-//resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/"
-
+resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/"
 resolvers += "Internal artifactory" at "https://artprod.dev.bloomberg.com/artifactory/root-repos"
 
 scalaVersion := "2.12.2"

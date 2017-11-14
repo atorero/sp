@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.{Silhouette, SilhouetteProvider}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
@@ -13,11 +13,13 @@ import play.api.data.Forms.{mapping, nonEmptyText}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import services.LoginData
+import util.CookieEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class LoginController @Inject()(
+                                 silhouette: SilhouetteProvider[CookieEnv],
                                  userService: UserService,
                                  credentialsProvider: CredentialsProvider,
                                  authInfoRepository: AuthInfoRepository,
