@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.{Silhouette, SilhouetteProvider}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.Credentials
@@ -36,18 +37,21 @@ class LoginController @Inject()(
     )(LoginData.apply)(LoginData.unapply)
   )
 
-  def form = Action { implicit request: Request[AnyContent] =>
+  def form = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
     Ok(views.html.loginform(loginForm))
   }
 
-  def login = Action.async { implicit request: Request[AnyContent] =>
+  def login = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
     loginForm.bindFromRequest.fold(
-      formWithErrors => Future(BadRequest("Failed")),
+      formWithErrors => Future(BadRequest(views.html.loginform(loginForm))),
       contact => {
         val credentials = Credentials(contact.login, contact.password)
         credentialsProvider.authenticate(credentials).map { loginInfo =>
           println(loginInfo)
           Ok("Logged in!")
+        }.recover {
+          case _: ProviderException =>
+            Redirect(routes.LoginController.form()).flashing("error" -> "invalid.credentials")
         }
       })
   }
