@@ -11,6 +11,7 @@ GET     /science                    controllers.ScienceController.index
 
 GET     /login_form                 controllers.LoginController.form
 POST    /login                      controllers.LoginController.login
+GET     /backoffice                 controllers.BackofficeController.index
 
 GET     /labs/create                controllers.LabsController.createDB
 GET     /labs/drop                  controllers.LabsController.dropTable
