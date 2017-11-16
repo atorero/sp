@@ -1,0 +1,9 @@
+@import models.User
+@(user: User)(implicit messages: Messages, request: RequestHeader)
+
+@main("Backoffice", Some(user)) {
+
+<p>Name: @user.name</p>
+<p>Country: @user.country</p>
+<p>Email: @user.email</p>
+}

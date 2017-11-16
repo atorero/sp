@@ -1,8 +1,8 @@
 @import services.Lab
 
-@(labList: Seq[Lab])
+@(labList: Seq[Lab])(implicit messages: Messages, request: RequestHeader)
 
-@main("Labs") {
+@main("Labs", None) {
 
 <h1>Researchers</h1>
 

@@ -3,10 +3,11 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
-import com.mohiva.play.silhouette.api.{Silhouette, SilhouetteProvider}
+import com.mohiva.play.silhouette.api.{LoginEvent, Silhouette, SilhouetteProvider}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
+import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import models.{User, UserService}
 import play.api.data.Form
@@ -38,20 +39,31 @@ class LoginController @Inject()(
   )
 
   def form = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
-    Ok(views.html.loginform(loginForm))
+    Ok(views.html.loginform())
   }
 
   def login = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
     loginForm.bindFromRequest.fold(
-      formWithErrors => Future(BadRequest(views.html.loginform(loginForm))),
+      formWithErrors => {
+        println(formWithErrors)
+        Future(BadRequest("Form errors"))
+      }, // Future(BadRequest(views.html.loginform(loginForm))),
       contact => {
         val credentials = Credentials(contact.login, contact.password)
-        credentialsProvider.authenticate(credentials).map { loginInfo =>
-          println(loginInfo)
-          Ok("Logged in!")
+        credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
+          userService.retrieve(loginInfo).flatMap {
+            case None => Future.failed(new IdentityNotFoundException("Couldn't find user"))
+            case Some(user) =>
+              for {
+                authenticator <- silhouette.env.authenticatorService.create(loginInfo)
+                cookie <- silhouette.env.authenticatorService.init(authenticator)
+                result <- silhouette.env.authenticatorService.embed(cookie, Redirect(routes.HomeController.index()))
+              } yield result
+          }
         }.recover {
-          case _: ProviderException =>
-            Redirect(routes.LoginController.form()).flashing("error" -> "invalid.credentials")
+          case ex: ProviderException =>
+            BadRequest("Invalid credentials:\n" + ex)
+          //Redirect(routes.LoginController.form()).flashing("error" -> "invalid.credentials")
         }
       })
   }

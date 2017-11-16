@@ -1,4 +1,8 @@
-@main("") {
+@import models.User
+
+@(user: Option[User])(implicit messages: Messages, request: RequestHeader)
+
+@main("", user) {
 
 <h1>Business meets Science</h1>
 

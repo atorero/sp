@@ -3,6 +3,7 @@ package controllers
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
+import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.{LoginInfo, SignUpEvent, Silhouette, SilhouetteProvider}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
@@ -22,6 +23,7 @@ import scala.util.{Failure, Success}
 class RegisterController @Inject()(
                                     silhouette: SilhouetteProvider[CookieEnv],
                                     userService: UserService,
+                                    authInfoRepository: AuthInfoRepository,
                                     passwordHasherRegistry: PasswordHasherRegistry
                                   )(
     implicit ec: ExecutionContext,
@@ -63,18 +65,24 @@ class RegisterController @Inject()(
     }
   }
 
-  def userPost = Action.async { implicit request : Request[AnyContent] =>
+  def userPost = silhouette.UnsecuredAction.async { implicit request : Request[AnyContent] =>
     userForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("Failed")),
       contact => {
         checkCaptcha(request).flatMap { _ =>
-          val loginInfo = LoginInfo(CredentialsProvider.ID, contact.email)
+          val loginInfo = LoginInfo(CredentialsProvider.ID, contact.login)
           userService.retrieve(loginInfo).map {
             case Some(user) => Ok("Hi " + contact.name + "! " + user.id)
             case None =>
               val authInfo = passwordHasherRegistry.current.hash(contact.password)
-              val user = User(UUID.randomUUID(), loginInfo) // TODO: it should not be random!
+              val user = User(
+                UUID.randomUUID(),
+                loginInfo,
+                contact.name,
+                contact.country,
+                contact.email)
               userService.save(user)
+              authInfoRepository.add(loginInfo, authInfo)
               silhouette.env.eventBus.publish(SignUpEvent(user, request))
 
               println(UserService.users)

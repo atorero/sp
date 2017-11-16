@@ -1,0 +1,7 @@
+@import models.User
+@(user: User)
+
+<h3>Welcome, @user.name!</h3>
+<ul>
+    <li><a href="@routes.BackofficeController.index">My info</a></li>
+</ul>

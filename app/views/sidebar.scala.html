@@ -1,3 +1,6 @@
+@import models.User
+@(user: Option[User])(implicit messages: Messages, request: RequestHeader)
+
 <aside>
     <h3>For Business</h3>
     <ul>
@@ -9,4 +12,9 @@
         <li><a href="@routes.ScienceController.index">Advantages</a></li>
         <li><a href="@routes.RegisterController.form">Sign up</a></li>
     </ul>
+    @{user match {
+        case Some(logged) =>  backoffice_menu(logged)
+        case None => loginform()
+    }}
+
 </aside>

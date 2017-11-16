@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import play.api.i18n.I18nSupport
 import play.api.mvc.{AbstractController, ControllerComponents}
 import services.{Lab, LabsRecord}
 
@@ -11,17 +12,18 @@ import scala.concurrent.{ExecutionContext, Future}
   * Created by amikhaylov8 on 10.10.17.
   */
 @Singleton
-class LabsController @Inject()(implicit ec: ExecutionContext, cc: ControllerComponents) extends AbstractController(cc) {
+class LabsController @Inject()(implicit ec: ExecutionContext, cc: ControllerComponents)
+  extends AbstractController(cc) with I18nSupport {
 
   val dummy = List(
     Lab("LPMV", "EPFL", "Switzerland"),
     Lab("Bioinformatics", "MIPT", "Russia"))
 
-  def list = Action.async {
+  def list = Action.async { implicit request =>
     LabsRecord.getAll.map { labs => Ok(views.html.labs(labs)) }
   }
 
-  def get(id: Int) = Action.async {
+  def get(id: Int) = Action.async { implicit request =>
     LabsRecord.get(id).map { lab => Ok(views.html.lab(lab)) }
   }
 
