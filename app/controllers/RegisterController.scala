@@ -3,10 +3,9 @@ package controllers
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
-import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
-import com.mohiva.play.silhouette.api.{LoginInfo, SignUpEvent, Silhouette, SilhouetteProvider}
+import com.mohiva.play.silhouette.api.{LoginInfo, SignUpEvent, SilhouetteProvider}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import models.{User, UserService}
 import play.api.data.Form
@@ -18,7 +17,6 @@ import services.UserData
 import util.CookieEnv
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 @Singleton
 class RegisterController @Inject()(
