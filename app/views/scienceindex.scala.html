@@ -1,6 +1,8 @@
-@()(implicit messages: Messages, request: RequestHeader)
+@import models.User
 
-@main("For Scientists", None) {
+@(userOption: Option[User])(implicit messages: Messages, request: RequestHeader)
+
+@main("For Scientists", userOption) {
 
 <h1>For Scientists</h1>
 

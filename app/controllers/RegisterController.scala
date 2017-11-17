@@ -3,6 +3,7 @@ package controllers
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
+import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.{LoginInfo, SignUpEvent, Silhouette, SilhouetteProvider}
@@ -42,11 +43,11 @@ class RegisterController @Inject()(
     )(UserData.apply)(UserData.unapply)
   )
 
-  def form = Action { implicit request : Request[AnyContent] =>
+  def form = silhouette.UnsecuredAction { implicit request : Request[AnyContent] =>
     Ok(views.html.register(userForm))
   }
 
-  def checkCaptcha(request : Request[AnyContent]): Future[Unit] = {
+  def checkCaptcha(request : Request[AnyContent]): Future[Boolean] = {
     val formParams = request.body.asFormUrlEncoded.get
     val captchaResponse = formParams("g-recaptcha-response")
     val remoteAddress = request.remoteAddress
@@ -58,9 +59,9 @@ class RegisterController @Inject()(
       "remoteid" -> Seq(remoteAddress)
     )
     val validationFuture = validationRequest.post(params)
-    validationFuture.map { validationResponse =>
+    validationFuture.flatMap { validationResponse =>
       val result = validationResponse.json
-      if ((result \ "success").as [Boolean]) Future.successful(Unit)
+      if ((result \ "success").as [Boolean]) Future.successful(true)
       else Future.failed(new SecurityException((result \ "error-codes").toString))
     }
   }
@@ -87,8 +88,12 @@ class RegisterController @Inject()(
 
               println(UserService.users)
 
-              Ok("New user")
+              Redirect(routes.HomeController.index())
           }
+        }.recover {
+          case ex: SecurityException =>
+            BadRequest("Captcha not passed:\n" + ex)
+          //Redirect(routes.LoginController.form()).flashing("error" -> "invalid.credentials")
         }
       }
     )

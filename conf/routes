@@ -9,7 +9,6 @@ GET     /labs                       controllers.LabsController.list
 GET     /about                      controllers.AboutController.about
 GET     /science                    controllers.ScienceController.index
 
-GET     /login_form                 controllers.LoginController.form
 POST    /login                      controllers.LoginController.login
 GET     /backoffice                 controllers.BackofficeController.index
 

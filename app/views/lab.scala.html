@@ -1,8 +1,9 @@
 @import services.Lab
+@import models.User
 
-@(lab: Lab)(implicit messages: Messages, request: RequestHeader)
+@(lab: Lab, userOption: Option[User])(implicit messages: Messages, request: RequestHeader)
 
-@main(lab.name, None) {
+@main(lab.name, userOption) {
 
 <h1>@lab.name</h1>
 

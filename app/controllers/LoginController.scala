@@ -38,10 +38,6 @@ class LoginController @Inject()(
     )(LoginData.apply)(LoginData.unapply)
   )
 
-  def form = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
-    Ok(views.html.loginform())
-  }
-
   def login = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
     loginForm.bindFromRequest.fold(
       formWithErrors => {

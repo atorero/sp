@@ -1,8 +1,9 @@
 @import services.Lab
+@import models.User
 
-@(labList: Seq[Lab])(implicit messages: Messages, request: RequestHeader)
+@(labList: Seq[Lab], userOption: Option[User])(implicit messages: Messages, request: RequestHeader)
 
-@main("Labs", None) {
+@main("Labs", userOption) {
 
 <h1>Researchers</h1>
 
