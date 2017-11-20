@@ -5,7 +5,7 @@ import javax.inject.{Inject, Singleton}
 import com.mohiva.play.silhouette.api.SilhouetteProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{AbstractController, ControllerComponents}
-import services.{Lab, LabsRecord}
+import models.db.{Lab, LabsRecord}
 import util.CookieEnv
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -22,8 +22,8 @@ class LabsController @Inject()(
   extends AbstractController(cc) with I18nSupport {
 
   val dummy = List(
-    Lab("LPMV", "EPFL", "Switzerland"),
-    Lab("Bioinformatics", "MIPT", "Russia"))
+    Lab(0, "LPMV", "EPFL", "Switzerland"),
+    Lab(0, "Bioinformatics", "MIPT", "Russia"))
 
   def list = silhouette.UserAwareAction.async { implicit request =>
     LabsRecord.getAll.map { labs => Ok(views.html.labs(labs, request.identity)) }
@@ -42,7 +42,7 @@ class LabsController @Inject()(
   }
 
   def add(name: String, university: String, country: String) = silhouette.SecuredAction.async {
-    val lab = Lab(name, university, country)
+    val lab = Lab(0, name, university, country)
     LabsRecord.add(lab).map { id => Ok(s"Inserted a new lab with id=$id") }
   }
 

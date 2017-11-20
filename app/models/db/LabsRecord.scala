@@ -1,7 +1,7 @@
-package services
+package models.db
 
-import services.Lab.LabTuple
 import slick.jdbc.H2Profile.api._
+import slick.lifted.ProvenShape.proveShapeOf
 import slick.lifted.{TableQuery, Tag}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -10,13 +10,13 @@ import scala.concurrent.Future
 /**
   * Created by amikhaylov8 on 17.10.17.
   */
-class LabsRecord(tag: Tag) extends Table[LabTuple](tag, "LABS") {
+class LabsRecord(tag: Tag) extends Table[Lab](tag, "LABS") {
   def id = column[Int]("ID", O.PrimaryKey, O.AutoInc)
   def name = column[String]("NAME")
   def university = column[String]("UNIVERSITY")
   def country = column[String]("COUNTRY")
 
-  def * = (id, name, university, country)
+  def * = (id, name, university, country) <> (Lab.tupled, Lab.unapply)
   def idx = index("NAME_UNIVERSITY", (name, university), unique = true)
 }
 
@@ -31,25 +31,13 @@ object LabsRecord {
 
   def drop = db.run(TableQuery[LabsRecord].schema.drop)
 
-  def add(lab: Lab): Future[Int] = {
-    val labs = TableQuery[LabsRecord]
-    db.run(labs += ( 0, lab.name, lab.university, lab.country  ))
-  }
+  def add(lab: Lab): Future[Int] = db.run(TableQuery[LabsRecord] += Lab( 0, lab.name, lab.university, lab.country  ))
 
-  def getAll: Future[Seq[Lab]] = {
-    val labsQuery = TableQuery[LabsRecord]
-    db.run(labsQuery.result)
-      .map { _.map { Lab.apply } }
-  }
+  def getAll: Future[Seq[Lab]] = db.run(TableQuery[LabsRecord].result)
 
   def get(id: Int): Future[Lab] = {
-    val labs = TableQuery[LabsRecord].filter {
-      _.id === id
-    }
-    db.run(labs.result)
-      .map {
-        case Seq(tuple: LabTuple) => Lab(tuple)
-      }
+    val labs = TableQuery[LabsRecord].filter { _.id === id }
+    db.run(labs.result).map { _.head }
   }
 
 }
