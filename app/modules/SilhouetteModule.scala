@@ -16,7 +16,7 @@ import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, Secure
 import com.mohiva.play.silhouette.password.{BCryptPasswordHasher, BCryptSha256PasswordHasher}
 import com.mohiva.play.silhouette.persistence.daos.{DelegableAuthInfoDAO, InMemoryAuthInfoDAO}
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
-import models.UserService
+import models.db.{PasswordInfoDAO, UserService}
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
 import net.codingwell.scalaguice.ScalaModule
@@ -41,7 +41,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule{
     bind[DelegableAuthInfoDAO[OpenIDInfo]].to[OpenIDInfoDAO]
      */
 
-    bind[DelegableAuthInfoDAO[PasswordInfo]].toInstance(new InMemoryAuthInfoDAO[PasswordInfo])
+    //bind[DelegableAuthInfoDAO[PasswordInfo]].toInstance(new InMemoryAuthInfoDAO[PasswordInfo])
+    bind[DelegableAuthInfoDAO[PasswordInfo]].to[PasswordInfoDAO]
     bind[DelegableAuthInfoDAO[OAuth1Info]].toInstance(new InMemoryAuthInfoDAO[OAuth1Info])
     bind[DelegableAuthInfoDAO[OAuth2Info]].toInstance(new InMemoryAuthInfoDAO[OAuth2Info])
     bind[DelegableAuthInfoDAO[OpenIDInfo]].toInstance(new InMemoryAuthInfoDAO[OpenIDInfo])

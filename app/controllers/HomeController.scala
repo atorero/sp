@@ -17,7 +17,6 @@ class HomeController @Inject()(
                               cc: ControllerComponents) extends AbstractController(cc) with I18nSupport {
 
   def index = silhouette.UserAwareAction { implicit request =>
-    println(request.identity)
     Ok(views.html.index(request.identity))
   }
 

@@ -1,5 +1,6 @@
 package models.db
 
+import models.Lab
 import slick.jdbc.H2Profile.api._
 import slick.lifted.ProvenShape.proveShapeOf
 import slick.lifted.{TableQuery, Tag}

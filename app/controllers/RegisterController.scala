@@ -7,7 +7,8 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.{LoginInfo, SignUpEvent, SilhouetteProvider}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import models.{User, UserService}
+import models.User
+import models.db.UserService
 import play.api.data.Form
 import play.api.data.Forms.{email, mapping, nonEmptyText}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -25,10 +26,10 @@ class RegisterController @Inject()(
                                     authInfoRepository: AuthInfoRepository,
                                     passwordHasherRegistry: PasswordHasherRegistry
                                   )(
-    implicit ec: ExecutionContext,
-    cc: ControllerComponents,
-    messagesApi: MessagesApi,
-    ws: WSClient) extends AbstractController(cc) with I18nSupport {
+                                    implicit ec: ExecutionContext,
+                                    cc: ControllerComponents,
+                                    messagesApi: MessagesApi,
+                                    ws: WSClient) extends AbstractController(cc) with I18nSupport {
 
 
   val userForm = Form(
@@ -41,11 +42,11 @@ class RegisterController @Inject()(
     )(UserData.apply)(UserData.unapply)
   )
 
-  def form = silhouette.UnsecuredAction { implicit request : Request[AnyContent] =>
+  def form = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
     Ok(views.html.register(userForm))
   }
 
-  def checkCaptcha(request : Request[AnyContent]): Future[Boolean] = {
+  def checkCaptcha(request: Request[AnyContent]): Future[Boolean] = {
     val formParams = request.body.asFormUrlEncoded.get
     val captchaResponse = formParams("g-recaptcha-response")
     val remoteAddress = request.remoteAddress
@@ -59,36 +60,32 @@ class RegisterController @Inject()(
     val validationFuture = validationRequest.post(params)
     validationFuture.flatMap { validationResponse =>
       val result = validationResponse.json
-      if ((result \ "success").as [Boolean]) Future.successful(true)
+      if ((result \ "success").as[Boolean]) Future.successful(true)
       else Future.failed(new SecurityException((result \ "error-codes").toString))
     }
   }
 
-  def userPost = silhouette.UnsecuredAction.async { implicit request : Request[AnyContent] =>
+  def userPost = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
     userForm.bindFromRequest.fold(
       formWithErrors => Future(BadRequest("Failed")),
       contact => {
-        checkCaptcha(request).flatMap { _ =>
-          val loginInfo = LoginInfo(CredentialsProvider.ID, contact.login)
-          userService.retrieve(loginInfo).map {
-            case Some(user) => Ok("Hi " + contact.name + "! " + user.id)
-            case None =>
-              val authInfo = passwordHasherRegistry.current.hash(contact.password)
-              val user = User(
-                UUID.randomUUID(),
-                loginInfo,
-                contact.name,
-                contact.country,
-                contact.email)
-              userService.save(user)
-              authInfoRepository.add(loginInfo, authInfo)
-              silhouette.env.eventBus.publish(SignUpEvent(user, request))
-
-              println(UserService.users)
-
-              Redirect(routes.HomeController.index())
-          }
-        }.recover {
+        val loginInfo = LoginInfo(CredentialsProvider.ID, contact.login)
+        val infos = for {
+          _ <- checkCaptcha(request)
+          userInfo <- userService.retrieve(loginInfo)
+        } yield userInfo
+        val response = infos.flatMap {
+          case Some(user) => Future(Ok("Hi " + contact.name + "! You are already registered!" + user.id))
+          case None =>
+            val authInfo = passwordHasherRegistry.current.hash(contact.password)
+            val user = User(UUID.randomUUID(), loginInfo, contact.name, contact.country, contact.email)
+            for {
+              _ <- userService.save(user)
+              _ <- authInfoRepository.add(loginInfo, authInfo)
+              _ = silhouette.env.eventBus.publish(SignUpEvent(user, request))
+            } yield Redirect(routes.HomeController.index())
+        }
+        response.recover {
           case ex: SecurityException =>
             BadRequest("Captcha not passed:\n" + ex)
           //Redirect(routes.LoginController.form()).flashing("error" -> "invalid.credentials")

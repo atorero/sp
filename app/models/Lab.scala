@@ -1,4 +1,4 @@
-package models.db
+package models
 
 /**
   * Created by amikhaylov8 on 10.10.17.

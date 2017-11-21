@@ -3,9 +3,10 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import com.mohiva.play.silhouette.api.SilhouetteProvider
+import models.Lab
 import play.api.i18n.I18nSupport
 import play.api.mvc.{AbstractController, ControllerComponents}
-import models.db.{Lab, LabsRecord}
+import models.db.LabsRecord
 import util.CookieEnv
 
 import scala.concurrent.{ExecutionContext, Future}

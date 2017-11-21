@@ -8,7 +8,7 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import models.UserService
+import models.db.UserService
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
 import play.api.i18n.{I18nSupport, MessagesApi}
