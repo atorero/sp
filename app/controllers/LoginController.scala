@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import com.mohiva.play.silhouette.api.SilhouetteProvider
+import com.mohiva.play.silhouette.api.{LogoutEvent, SilhouetteProvider}
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.Credentials
@@ -61,5 +61,11 @@ class LoginController @Inject()(
           //Redirect(routes.LoginController.form()).flashing("error" -> "invalid.credentials")
         }
       })
+  }
+
+  def logout = silhouette.SecuredAction.async { implicit request =>
+      val result = Redirect(routes.HomeController.index())
+      silhouette.env.eventBus.publish(LogoutEvent(request.identity, request))
+      silhouette.env.authenticatorService.discard(request.authenticator, result)
   }
 }
