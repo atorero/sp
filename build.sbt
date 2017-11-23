@@ -1,6 +1,6 @@
 name := """scienceprovider"""
 
-version := "0.4.2-SNAPSHOT"
+version := "0.4.2"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
@@ -10,7 +10,7 @@ resolvers ++= Seq(
   "Internal artifactory" at "https://artprod.dev.bloomberg.com/artifactory/root-repos"
 )
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.4"
 
 libraryDependencies ++= Seq(
   guice,
