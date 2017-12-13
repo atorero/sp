@@ -1,0 +1,4 @@
+@(user: models.User, url: String)
+Hello @user.name,
+
+Please follow the link to confirm and activate your new account: @url

@@ -15,8 +15,8 @@ class UserService @Inject()(implicit ex: ExecutionContext) extends IdentityServi
 
   val dbName = "h2file"
   val db = Database.forConfig(dbName)
-  db.run(TableQuery[UserRecord].schema.create) // TODO
 
+  db.run( TableQuery[UserRecord].schema.create ) // TODO
 
   def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
     val query = TableQuery[UserRecord].filter { _.providerEquals(loginInfo) }

@@ -1,7 +1,7 @@
 @import services.UserData
 @import helper._
 
-@(userForm: Form[UserData])(implicit messages: Messages, request: RequestHeader)
+@(userForm: Form[UserData], userTypes: Seq[(String, String)])(implicit messages: Messages, request: RequestHeader)
 
 @main("Become a Member", None) {
 
@@ -10,13 +10,14 @@
 </h2>
 
 <script src="@routes.Assets.versioned("lib/jquery/jquery.min.js")"></script>
-<script src="@routes.Assets.versioned("javascripts/jquery.validate.min.js")"></script>
+<script src="@routes.Assets.versioned("lib/jquery-validation/jquery.validate.min.js")"></script>
 <script src="@routes.Assets.versioned("javascripts/registerFormValidation.js")"></script>
 <script src='https://www.google.com/recaptcha/api.js' async defer></script>
 
 @form( action = routes.RegisterController.userPost(), 'id -> "registerForm", 'method -> "POST",
     'onsubmit -> "return $(this).valid() && grecaptcha.getResponse() != ''") {
     @CSRF.formField
+    @select(userForm("userType"), userTypes, '_label -> "Account Type")
     @inputText(userForm("name"))
     @inputText(userForm("country"))
     @inputText(userForm("email"))

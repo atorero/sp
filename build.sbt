@@ -1,6 +1,6 @@
 name := """scienceprovider"""
 
-version := "0.4.2"
+version := "0.4.3-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
@@ -18,7 +18,11 @@ libraryDependencies ++= Seq(
   ws,
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test,
   "com.h2database" % "h2" % "1.4.195",
+
   "com.typesafe.play" %% "play-slick" % "3.0.0",
+  //"io.github.nafg" %% "slick-migration-api" % "0.4.2",
+  "com.typesafe.play" %% "play-mailer" % "6.0.1",
+  "com.typesafe.play" %% "play-mailer-guice" % "6.0.1",
 
   "com.mohiva" %% "play-silhouette" % "5.0.0",
   "com.mohiva" %% "play-silhouette-password-bcrypt" % "5.0.0",
@@ -27,5 +31,6 @@ libraryDependencies ++= Seq(
   "com.iheart" %% "ficus" % "1.4.3",
   "net.codingwell" %% "scala-guice" % "4.1.0",
 
-  "org.webjars" % "jquery" % "3.2.1"
+  "org.webjars" % "jquery" % "3.2.1",
+  "org.webjars" % "jquery-validation" % "1.17.0"
 )
